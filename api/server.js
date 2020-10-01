@@ -18,6 +18,11 @@ const users = [
     id: 1,
     name: 'Elijah Kim', 
     bio: 'This project is harder than I thought'
+  },
+  {
+    id: 2,
+    name: 'bo',
+    bio: 'bo'
   }
 ]
 
@@ -82,6 +87,25 @@ server.delete('/api/users/:id', (req, res) => {
     res.status(404).json({ message: 'The user with the specified ID does not exist.' });
   } else {
     res.status(500).json({ errorMessage: 'The user could not be removed' });
+  }
+})
+
+// PUT request by grabbing a specific id
+server.put('./api/users/:id', (req, res) => {
+  const id = Number(req.params.id);
+  const chantges = req.body;
+  const found = users.find(user => user.id === id);
+
+  if(!found) {
+    res.status(404).json({ message: 'The user with the specified ID does not exist.' });
+  } else if(found) {
+    Object.assign(found, changes);
+    res.status(200).json({ 
+      message: 'Updated the user',
+      users: users
+    });
+  } else {
+    res.status(500).json({ errorMessage: 'The user information could be updated' });
   }
 })
 
