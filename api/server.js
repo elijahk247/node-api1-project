@@ -15,7 +15,7 @@ const users = [
     bio: "Not Tarzan's Wife, another Jane",
   },
   {
-    id: shortid.generate(),
+    id: 1,
     name: 'Elijah Kim', 
     bio: 'This project is harder than I thought'
   }
@@ -30,6 +30,29 @@ server.get('/api/users', (req, res) => {
   }
 })
 
+// GET request by id, throws error if user by that id is not found
+server.get('/api/users/:id', (req, res) => {
+  const id = Number(req.params.id);
+  const found = users.find(user => {
+    return user.id === id;
+  });
+
+  if(found) {
+    const user = users.filter(person => {
+      return person.id === id;
+    });
+    console.log(user);
+    res.status(200).json({ 
+      message: 'The user has been found', 
+      user: user 
+    })
+  } else if (!found) {
+    res.status(404).json({ message: 'The user with the specified ID does not exist '});
+  } else {
+    res.status(500).json({ errorMessage: 'The user information could not be retrieved' });
+  }
+})
+
 // POST requests
 server.post('/api/users', (req, res) => {
   const data = req.body;
@@ -41,6 +64,24 @@ server.post('/api/users', (req, res) => {
     res.status(201).json({ resource: users });
   } else {
     res.status(500).json({ errorMessage: 'There was an error while saving user to the database' });
+  }
+})
+
+// DELETE request by grabbing a specific id
+server.delete('/api/users/:id', (req, res) => {
+  const id = Number(req.params.id);
+  const found = users.find(user => user.id === id);
+
+  if(found) {
+    users = users.filter(user => user.id === id);
+    res.status(200).json({ 
+      message: 'The user has been successfully removed', 
+      users: users 
+    });
+  } else if(!found) {
+    res.status(404).json({ message: 'The user with the specified ID does not exist.' });
+  } else {
+    res.status(500).json({ errorMessage: 'The user could not be removed' });
   }
 })
 
