@@ -1,5 +1,5 @@
 // using shortid to generate unique id values
-const shortid = require('shortid');   // generate a shortid value using shortid.generate()
+let shortid = require('shortid');   // generate a shortid value using shortid.generate()
 const express = require('express');
 const server = express();
 
@@ -8,7 +8,7 @@ server.get('/', (req, res) => {
   res.status(200).json({ intialMessage: 'welcome to the API' });
 })
 
-const users = [
+let users = [
   {
     id: 'a_unique_id', 
     name: 'Jane Doe',
@@ -78,22 +78,23 @@ server.delete('/api/users/:id', (req, res) => {
   const found = users.find(user => user.id === id);
 
   if(found) {
-    users = users.filter(user => user.id === id);
+    users = users.filter(user => user.id !== id);
     res.status(200).json({ 
-      message: 'The user has been successfully removed', 
+      message: 'User successfully removed',
       users: users 
     });
   } else if(!found) {
-    res.status(404).json({ message: 'The user with the specified ID does not exist.' });
+    res.status(404).json({ Message: 'The user with the specified ID does not exist' });
   } else {
     res.status(500).json({ errorMessage: 'The user could not be removed' });
   }
 })
 
 // PUT request by grabbing a specific id
-server.put('./api/users/:id', (req, res) => {
-  const id = Number(req.params.id);
-  const chantges = req.body;
+server.put('/api/users/:id', (req, res) => {
+  const data = req.body;
+  const id = req.params.id;
+  const changes = req.body;
   const found = users.find(user => user.id === id);
 
   if(!found) {
@@ -104,8 +105,10 @@ server.put('./api/users/:id', (req, res) => {
       message: 'Updated the user',
       users: users
     });
+  } else if (data.name === undefined || data.bio === undefined) {
+    res.status(400).json({ errorMessage: 'Please provide a name and bio for the user'});
   } else {
-    res.status(500).json({ errorMessage: 'The user information could be updated' });
+    res.status(500).json({ message: 'The user information could be updated' });
   }
 })
 
