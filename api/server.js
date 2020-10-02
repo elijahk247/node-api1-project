@@ -81,7 +81,7 @@ server.delete('/api/users/:id', (req, res) => {
     users = users.filter(user => user.id !== id);
     res.status(200).json({ 
       message: 'User successfully removed',
-      users: users 
+      resource: users 
     });
   } else if(!found) {
     res.status(404).json({ Message: 'The user with the specified ID does not exist' });
@@ -92,20 +92,19 @@ server.delete('/api/users/:id', (req, res) => {
 
 // PUT request by grabbing a specific id
 server.put('/api/users/:id', (req, res) => {
-  const data = req.body;
-  const id = req.params.id;
+  const id = Number(req.params.id);
   const changes = req.body;
   const found = users.find(user => user.id === id);
 
-  if(!found) {
-    res.status(404).json({ message: 'The user with the specified ID does not exist.' });
-  } else if(found) {
+  if(found) {
     Object.assign(found, changes);
     res.status(200).json({ 
       message: 'Updated the user',
-      users: users
+      resource: users
     });
-  } else if (data.name === undefined || data.bio === undefined) {
+  } else if(!found) {
+      res.status(404).json({ message: 'The user with the specified ID does not exist.' });
+  } else if (changes.name === undefined || changes.bio === undefined) {
     res.status(400).json({ errorMessage: 'Please provide a name and bio for the user'});
   } else {
     res.status(500).json({ message: 'The user information could be updated' });
